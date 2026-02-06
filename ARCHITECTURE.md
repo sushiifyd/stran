@@ -1,4 +1,4 @@
-# Stran Architecture
+# Stream Architecture
 
 ## Overview
 Spring Boot application that listens to Kafka events, validates subscriptions in database, and sends notifications to Kafka when subscriptions exist.
