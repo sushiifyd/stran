@@ -24,7 +24,7 @@ public class NotificationProducer {
     private final KafkaTemplate<String, NotificationMessage> notificationKafkaTemplate;
 
     @Value("${kafka.topic.notifications}")
-    private String notificationsTopic;
+    private final String notificationsTopic;
 
     /**
      * Publish a list of notification messages to the notifications topic.
