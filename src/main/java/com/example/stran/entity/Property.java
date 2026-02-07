@@ -2,6 +2,7 @@ package com.example.stran.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Immutable;
 
 import java.time.Instant;
 
@@ -13,9 +14,9 @@ import java.time.Instant;
  */
 @Entity
 @Table(name = "property", schema = "hmstst")
+@Immutable
 @Getter
-@Setter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Property {
 
