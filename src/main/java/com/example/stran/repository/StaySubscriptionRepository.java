@@ -19,7 +19,8 @@ import java.util.List;
 public interface StaySubscriptionRepository extends JpaRepository<StaySubscription, Long> {
 
     /**
-     * Find active PROPERTY-type subscriptions matching a specific property and check-in date.
+     * Find subscriptions matching a specific property and check-in date,
+     * filtered by the provided status and search type.
      *
      * <p>Used by the availability matching service to find subscriptions that
      * could match an incoming inventory event for a given property and date.
@@ -27,8 +28,8 @@ public interface StaySubscriptionRepository extends JpaRepository<StaySubscripti
      *
      * @param propertyId the property ID (resolved from propCode via PropertyRepository)
      * @param checkInDate the date from the inventory event
-     * @param status the subscription status to filter by (typically ACTIVE)
-     * @param searchType the search type to filter by (typically PROPERTY)
+     * @param status the subscription status to filter by (e.g., ACTIVE)
+     * @param searchType the search type to filter by (e.g., PROPERTY)
      * @return list of matching subscriptions
      */
     @Query("SELECT s FROM StaySubscription s " +
