@@ -65,6 +65,7 @@ public class NotificationProducer {
                                 result.getRecordMetadata().offset());
                     }
                 })
+                // Convert CompletableFuture<SendResult> to CompletableFuture<Void>
                 .thenRun(() -> {});
     }
 }
