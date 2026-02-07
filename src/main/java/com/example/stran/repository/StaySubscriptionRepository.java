@@ -3,10 +3,10 @@ package com.example.stran.repository;
 import com.example.stran.entity.StaySubscription;
 import com.example.stran.entity.SubscriptionSearchType;
 import com.example.stran.entity.SubscriptionStatus;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -14,9 +14,12 @@ import java.util.List;
 /**
  * Read-only repository for querying guest subscriptions.
  * Used to find active subscriptions that match incoming inventory events.
+ *
+ * <p>Extends {@link Repository} (not JpaRepository) to expose only read methods,
+ * enforcing that stran never writes to the stay_subscriptions table.
  */
-@Repository
-public interface StaySubscriptionRepository extends JpaRepository<StaySubscription, Long> {
+@Transactional(readOnly = true)
+public interface StaySubscriptionRepository extends Repository<StaySubscription, Long> {
 
     /**
      * Find subscriptions matching a specific property and check-in date,
