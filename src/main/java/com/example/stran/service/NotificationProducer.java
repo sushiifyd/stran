@@ -65,6 +65,6 @@ public class NotificationProducer {
                                 result.getRecordMetadata().offset());
                     }
                 })
-                .thenApply(result -> null);
+                .thenRun(() -> {});
     }
 }
