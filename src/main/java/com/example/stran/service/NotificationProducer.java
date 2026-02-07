@@ -1,13 +1,13 @@
 package com.example.stran.service;
 
 import com.example.stran.dto.notification.NotificationMessage;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Publishes {@link NotificationMessage} instances to the notifications MSK topic.
@@ -18,32 +18,40 @@ import java.util.List;
  */
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class NotificationProducer {
 
     private final KafkaTemplate<String, NotificationMessage> notificationKafkaTemplate;
-
-    @Value("${kafka.topic.notifications}")
     private final String notificationsTopic;
+
+    public NotificationProducer(
+            KafkaTemplate<String, NotificationMessage> notificationKafkaTemplate,
+            @Value("${kafka.topic.notifications}") String notificationsTopic) {
+        this.notificationKafkaTemplate = notificationKafkaTemplate;
+        this.notificationsTopic = notificationsTopic;
+    }
 
     /**
      * Publish a list of notification messages to the notifications topic.
      *
      * @param messages the notification messages to publish
+     * @return list of CompletableFutures for each published message
      */
-    public void send(List<NotificationMessage> messages) {
-        messages.forEach(this::sendSingle);
+    public List<CompletableFuture<Void>> send(List<NotificationMessage> messages) {
+        return messages.stream()
+                .map(this::sendSingle)
+                .toList();
     }
 
     /**
      * Publish a single notification message.
      *
      * @param message the notification message to publish
+     * @return CompletableFuture that completes when the message is sent
      */
-    public void sendSingle(NotificationMessage message) {
+    public CompletableFuture<Void> sendSingle(NotificationMessage message) {
         String key = String.valueOf(message.getSubscriptionId());
 
-        notificationKafkaTemplate.send(notificationsTopic, key, message)
+        return notificationKafkaTemplate.send(notificationsTopic, key, message)
                 .whenComplete((result, ex) -> {
                     if (ex != null) {
                         log.error("Failed to publish notification id={} for subscriptionId={}: {}",
@@ -56,6 +64,8 @@ public class NotificationProducer {
                                 result.getRecordMetadata().partition(),
                                 result.getRecordMetadata().offset());
                     }
-                });
+                })
+                // Convert CompletableFuture<SendResult> to CompletableFuture<Void>
+                .thenRun(() -> {});
     }
 }
