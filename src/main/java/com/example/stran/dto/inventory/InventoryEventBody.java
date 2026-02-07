@@ -26,5 +26,5 @@ public class InventoryEventBody {
     private String startDate;
     private String endDate;
     private String ratePlanCode;
-    private List<RoomRecommendation> recommendations;
+    private List<RoomRecommendation> roomRecommendations;
 }
