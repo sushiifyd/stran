@@ -45,7 +45,7 @@ public class NotificationDispatchService {
 
         notificationProducer.send(messages);
 
-        log.info("Dispatched {} notification(s) for propCode={} on date={}",
+        log.info("Submitted {} notification(s) for async publishing for propCode={} on date={}",
                 messages.size(), eventBody.getPropCode(), eventBody.getStartDate());
 
         return messages;

@@ -7,7 +7,6 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * Publishes {@link NotificationMessage} instances to the notifications MSK topic.
@@ -34,24 +33,21 @@ public class NotificationProducer {
      * Publish a list of notification messages to the notifications topic.
      *
      * @param messages the notification messages to publish
-     * @return list of CompletableFutures for each published message
      */
-    public List<CompletableFuture<Void>> send(List<NotificationMessage> messages) {
-        return messages.stream()
-                .map(this::sendSingle)
-                .toList();
+    public void send(List<NotificationMessage> messages) {
+        messages.forEach(this::sendSingle);
     }
 
     /**
-     * Publish a single notification message.
+     * Publish a single notification message asynchronously.
+     * Success and failure are logged internally via the completion callback.
      *
      * @param message the notification message to publish
-     * @return CompletableFuture that completes when the message is sent
      */
-    public CompletableFuture<Void> sendSingle(NotificationMessage message) {
+    public void sendSingle(NotificationMessage message) {
         String key = String.valueOf(message.getSubscriptionId());
 
-        return notificationKafkaTemplate.send(notificationsTopic, key, message)
+        notificationKafkaTemplate.send(notificationsTopic, key, message)
                 .whenComplete((result, ex) -> {
                     if (ex != null) {
                         log.error("Failed to publish notification id={} for subscriptionId={}: {}",
@@ -64,8 +60,6 @@ public class NotificationProducer {
                                 result.getRecordMetadata().partition(),
                                 result.getRecordMetadata().offset());
                     }
-                })
-                // Convert CompletableFuture<SendResult> to CompletableFuture<Void>
-                .thenRun(() -> {});
+                });
     }
 }
