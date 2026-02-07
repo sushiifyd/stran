@@ -3,6 +3,7 @@ package com.example.stran.service;
 import com.example.stran.dto.inventory.InventoryEventBody;
 import com.example.stran.dto.notification.NotificationMessage;
 import com.example.stran.entity.StaySubscription;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,10 @@ import java.util.UUID;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class NotificationDispatchService {
+
+    private final NotificationProducer notificationProducer;
 
     /**
      * Build and dispatch notification messages for every matched subscription.
@@ -39,8 +43,9 @@ public class NotificationDispatchService {
                 .map(sub -> buildNotification(sub, eventBody))
                 .toList();
 
-        // TODO Task 7: delegate to NotificationProducer.send(messages)
-        log.info("Dispatched {} notification(s) for propCode={} on date={}",
+        notificationProducer.send(messages);
+
+        log.info("Submitted {} notification(s) for async publishing for propCode={} on date={}",
                 messages.size(), eventBody.getPropCode(), eventBody.getStartDate());
 
         return messages;
