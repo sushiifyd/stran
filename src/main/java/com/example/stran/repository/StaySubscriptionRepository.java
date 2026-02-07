@@ -3,9 +3,7 @@ package com.example.stran.repository;
 import com.example.stran.entity.StaySubscription;
 import com.example.stran.entity.SubscriptionSearchType;
 import com.example.stran.entity.SubscriptionStatus;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
-import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -35,21 +33,17 @@ public interface StaySubscriptionRepository extends Repository<StaySubscription,
      * @param searchType the search type to filter by (e.g., PROPERTY)
      * @return list of matching subscriptions
      */
-    @Query("SELECT s FROM StaySubscription s " +
-           "WHERE s.propertyId = :propertyId " +
-           "AND s.checkInDate = :checkInDate " +
-           "AND s.status = :status " +
-           "AND s.searchType = :searchType")
-    List<StaySubscription> findMatchingSubscriptions(
-            @Param("propertyId") Long propertyId,
-            @Param("checkInDate") LocalDate checkInDate,
-            @Param("status") SubscriptionStatus status,
-            @Param("searchType") SubscriptionSearchType searchType);
+    List<StaySubscription> findByPropertyIdAndCheckInDateAndStatusAndSearchType(
+            Long propertyId,
+            LocalDate checkInDate,
+            SubscriptionStatus status,
+            SubscriptionSearchType searchType);
 
     /**
      * Convenience method: find active PROPERTY subscriptions for a property and check-in date.
      */
     default List<StaySubscription> findActivePropertySubscriptions(Long propertyId, LocalDate checkInDate) {
-        return findMatchingSubscriptions(propertyId, checkInDate, SubscriptionStatus.ACTIVE, SubscriptionSearchType.PROPERTY);
+        return findByPropertyIdAndCheckInDateAndStatusAndSearchType(
+                propertyId, checkInDate, SubscriptionStatus.ACTIVE, SubscriptionSearchType.PROPERTY);
     }
 }
