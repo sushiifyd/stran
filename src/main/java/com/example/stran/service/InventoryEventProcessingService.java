@@ -43,6 +43,7 @@ public class InventoryEventProcessingService {
                             strategy.getClass().getSimpleName(), matches.size(), eventBody.getPropCode());
                     return matches.stream();
                 })
+                .distinct()
                 .toList();
 
         if (allMatches.isEmpty()) {
