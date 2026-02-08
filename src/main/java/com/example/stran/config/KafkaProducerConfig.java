@@ -30,6 +30,13 @@ public class KafkaProducerConfig {
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        props.put(ProducerConfig.ACKS_CONFIG, "all");
+        props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
+        props.put(ProducerConfig.RETRIES_CONFIG, Integer.MAX_VALUE);
+        props.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 5);
+        // Cap the total time a send() can retry before reporting failure (default 120s)
+        props.put(ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, 30_000);
+        props.put(ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, 10_000);
         return new DefaultKafkaProducerFactory<>(props);
     }
 
