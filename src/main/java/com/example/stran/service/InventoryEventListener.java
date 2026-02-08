@@ -2,6 +2,7 @@ package com.example.stran.service;
 
 import com.example.stran.dto.inventory.InventoryEvent;
 import com.example.stran.dto.inventory.InventoryEventBody;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -17,9 +18,10 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class InventoryEventListener {
 
-    // TODO Task 9: inject InventoryEventProcessingService
+    private final InventoryEventProcessingService processingService;
 
     @KafkaListener(
             topics = "${kafka.topic.inventory}",
@@ -40,6 +42,6 @@ public class InventoryEventListener {
                 body.getPropCode(), body.getStartDate(), record.key(),
                 record.partition(), record.offset());
 
-        // TODO Task 9: delegate to inventoryEventProcessingService.process(body)
+        processingService.process(body);
     }
 }
